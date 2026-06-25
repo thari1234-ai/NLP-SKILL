@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript DOM Example</title>
+  <style>
+    :root {
+      --bg-1: #fff9f2;
+      --bg-2: #f6f3ff;
+      --bg-3: #eefcf7;
+      --card: #ffffff;
+      --text: #1a2a3a;
+      --muted: #4c5d70;
+      --primary: #f7a8b8;
+      --primary-2: #b9b6ff;
+      --primary-dark: #e58ea3;
+      --shadow: 0 16px 35px rgba(13, 43, 77, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      line-height: 1.5;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
+    }
+
+    .card {
+      width: min(620px, 100%);
+      background: var(--card);
+      border: 1px solid #d7e6ff;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      box-shadow: 0 8px 18px rgba(183, 139, 188, 0.35);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, var(--primary-dark), #a8c4ff);
+      box-shadow: 0 10px 20px rgba(183, 139, 188, 0.45);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 1.08rem;
+      color: #25303d;
+      padding: 12px 14px;
+      background: #f3f8ff;
+      border: 1px solid #d8e7ff;
+      border-radius: 10px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 10;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(35, 42, 58, 0.35);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      position: relative;
+      width: min(420px, 100%);
+      border-radius: 16px;
+      padding: 20px;
+      background: linear-gradient(140deg, #fff7fb, #f5f7ff 55%, #f0fff8);
+      border: 1px solid #eadfff;
+      box-shadow: 0 20px 40px rgba(72, 57, 99, 0.25);
+      animation: popIn 0.22s ease-out;
+    }
+
+    .modal-title {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .modal-text {
+      margin: 0 0 16px;
+      color: var(--muted);
+    }
+
+    .close-btn {
+      width: auto;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .close-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>JavaScript Button Click Demo</h1>
+    <p class="subtitle">Try the buttons below to test alert and DOM text updates.</p>
+
+    <div class="actions">
+      <button id="alertBtn">Show Alert</button>
+      <button id="changeTextBtn">Change Text</button>
+    </div>
+
+    <p id="message">Original text content.</p>
+  </main>
+
+  <section id="customModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalText">
+      <h2 id="modalTitle" class="modal-title">Styled Alert</h2>
+      <p id="modalText" class="modal-text">Button clicked! This is a custom alert message.</p>
+      <button id="closeModalBtn" class="close-btn">OK</button>
+    </div>
+  </section>
+
+  <script>
+    const alertBtn = document.getElementById('alertBtn');
+    const changeTextBtn = document.getElementById('changeTextBtn');
+    const message = document.getElementById('message');
+    const customModal = document.getElementById('customModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+
+    function openCustomAlert() {
+      customModal.classList.add('open');
+      customModal.setAttribute('aria-hidden', 'false');
+      closeModalBtn.focus();
+    }
+
+    function closeCustomAlert() {
+      customModal.classList.remove('open');
+      customModal.setAttribute('aria-hidden', 'true');
+      alertBtn.focus();
+    }
+
+    alertBtn.addEventListener('click', function () {
+      openCustomAlert();
+    });
+
+    closeModalBtn.addEventListener('click', closeCustomAlert);
+    modalBackdrop.addEventListener('click', closeCustomAlert);
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && customModal.classList.contains('open')) {
+        closeCustomAlert();
+      }
+    });
+
+    changeTextBtn.addEventListener('click', function () {
+      message.textContent = 'The text content has been changed using the DOM!';
+    });
+  </script>
+</body>
+</html>
